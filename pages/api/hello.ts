@@ -1,13 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-type Data = {
-  name: string
-}
+const baseURL = 'https://cnodejs.org/api/v1'
 
-export default function handler(
+export const getTopics = async (
   req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  res.status(200).json({ name: 'John Doe' })
+  res: NextApiResponse,
+) => {
+  const data = await fetch(`${baseURL}/topics`)
+  res.status(200).json(data)
 }

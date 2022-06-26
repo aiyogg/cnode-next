@@ -1,47 +1,108 @@
+import React, { useState } from 'react'
+import { GetServerSideProps } from 'next'
 import {
   Link as ChakraLink,
   Text,
-  Code,
+  Box,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
   List,
-  ListIcon,
   ListItem,
 } from '@chakra-ui/react'
-import { CheckCircleIcon, LinkIcon } from '@chakra-ui/icons'
 
 import { Container } from '../components/Container'
-import { Main } from '../components/Main'
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
 
-const Index = () => (
-  <Container height="100vh">
-    <Header />
-    <Main>
-      <List spacing={3} my={0} color="text">
-        <ListItem>
-          <ListIcon as={CheckCircleIcon} color="green.500" />
-          <ChakraLink
-            isExternal
-            href="https://chakra-ui.com"
-            flexGrow={1}
-            mr={2}
-          >
-            Chakra UI <LinkIcon />
-          </ChakraLink>
-        </ListItem>
-        <ListItem>
-          <ListIcon as={CheckCircleIcon} color="green.500" />
-          <ChakraLink isExternal href="https://nextjs.org" flexGrow={1} mr={2}>
-            Next.js <LinkIcon />
-          </ChakraLink>
-        </ListItem>
-      </List>
-    </Main>
+const tabMap = {
+  all: '全部',
+  good: '精华',
+  share: '分享',
+  ask: '问答',
+  job: '招聘',
+  dev: '客户端测试',
+}
+type TabKey = keyof typeof tabMap
 
-    <Footer>
-      <Text>Next ❤️ Chakra</Text>
-    </Footer>
-  </Container>
-)
+const limit = 20
+
+const Index = (props: any) => {
+  console.log(props)
+  const { list } = props
+  const [activeTab, setActiveTab] = useState(0)
+  const tabChange = (index: number) => {
+    console.log(Object.keys(tabMap)[index])
+
+    setActiveTab(index)
+  }
+
+  return (
+    <Container height="100vh">
+      <Header />
+      <Box
+        width="100%"
+        maxW="1280px"
+        mt="40px"
+        padding="4"
+        // bg="white"
+        boxShadow="lg"
+      >
+        <Tabs onChange={tabChange}>
+          <TabList>
+            {Object.keys(tabMap).map((key) => (
+              <Tab key={key}>{tabMap[key as TabKey]}</Tab>
+            ))}
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>
+              <List spacing={3}>
+                {list.map((item: any) => (
+                  <ListItem key={item.id}>
+                    <ChakraLink href="/">
+                      <Text fontWeight="bold">{item.title}</Text>
+                    </ChakraLink>
+                  </ListItem>
+                ))}
+              </List>
+            </TabPanel>
+            <TabPanel>
+              <p>two!</p>
+            </TabPanel>
+            <TabPanel>
+              <p>three!</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Box>
+
+      <Footer>
+        <Text>Next ❤️ Chakra</Text>
+      </Footer>
+    </Container>
+  )
+}
 
 export default Index
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { query } = context
+  const { tab = 'all' } = query
+  const tabKey = tab as TabKey
+  const page = Number(query.page) || 1
+
+  const url = `https://cnodejs.org/api/v1/topics?tab=${tabKey}&page=${page}&limit=${limit}`
+  const res = await fetch(url)
+  const data = await res.json()
+  let list = []
+  if (data.success) list = data.data
+
+  return {
+    props: {
+      list,
+    },
+  }
+}
