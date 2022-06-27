@@ -1,7 +1,11 @@
 import type { AppProps } from 'next/app'
 import { ChakraProvider } from '@chakra-ui/react'
+import moment from 'moment';
+import 'moment/locale/zh-cn';
 
 import theme from '../theme/index'
+
+moment.locale('zh-cn');
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

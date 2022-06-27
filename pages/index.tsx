@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { GetServerSideProps } from 'next'
 import {
-  Link as ChakraLink,
   Text,
   Box,
   Tabs,
@@ -16,8 +15,9 @@ import {
 import { Container } from '../components/Container'
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
+import Topic from '../components/Topic'
 
-const tabMap = {
+export const tabMap = {
   all: '全部',
   good: '精华',
   share: '分享',
@@ -25,12 +25,11 @@ const tabMap = {
   job: '招聘',
   dev: '客户端测试',
 }
-type TabKey = keyof typeof tabMap
+export type TabKey = keyof typeof tabMap
 
 const limit = 20
 
 const Index = (props: any) => {
-  console.log(props)
   const { list } = props
   const [activeTab, setActiveTab] = useState(0)
   const tabChange = (index: number) => {
@@ -59,12 +58,10 @@ const Index = (props: any) => {
 
           <TabPanels>
             <TabPanel>
-              <List spacing={3}>
+              <List spacing={5}>
                 {list.map((item: any) => (
                   <ListItem key={item.id}>
-                    <ChakraLink href="/">
-                      <Text fontWeight="bold">{item.title}</Text>
-                    </ChakraLink>
+                    <Topic topic={item} />
                   </ListItem>
                 ))}
               </List>
