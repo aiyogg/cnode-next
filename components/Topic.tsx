@@ -35,9 +35,9 @@ const Topic = ({ topic }: { topic: ITopic }) => {
     <Box display="flex" justifyContent="space-between">
       <HStack>
         <Avatar src={topic.author.avatar_url} />
-        <Text>
+        <div>
           <Text display="inline" fontSize="lg" color="teal.600">{topic.reply_count}</Text>/{topic.visit_count}
-        </Text>
+        </div>
         {topic.top && <Tag colorScheme="cnode">置顶</Tag>}
         <Tag colorScheme={tagColorMap[topic.tab]}>{tabMap[topic.tab]}</Tag>
         <ChakraLink href="/">
