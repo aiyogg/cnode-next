@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { GetServerSideProps } from 'next'
+import { useRouter } from 'next/router'
 import {
   Text,
   Box,
@@ -30,12 +31,16 @@ export type TabKey = keyof typeof tabMap
 const limit = 20
 
 const Index = (props: any) => {
+  const router = useRouter()
+  const { tab = 'all', page = 1 } = router.query
   const { list } = props
-  const [activeTab, setActiveTab] = useState(0)
-  const tabChange = (index: number) => {
-    console.log(Object.keys(tabMap)[index])
+  const [tabIndex, setTabIndex] = useState(Object.keys(tabMap).indexOf(tab as TabKey))
 
-    setActiveTab(index)
+  const tabChange = (index: number) => {
+    const tabKey = Object.keys(tabMap)[index]
+    console.log(tabKey)
+    setTabIndex(index)
+    router.push(`/?tab=${tabKey}`)
   }
 
   return (
@@ -49,30 +54,20 @@ const Index = (props: any) => {
         // bg="white"
         boxShadow="lg"
       >
-        <Tabs onChange={tabChange}>
+        <Tabs index={tabIndex} onChange={tabChange}>
           <TabList>
             {Object.keys(tabMap).map((key) => (
               <Tab key={key}>{tabMap[key as TabKey]}</Tab>
             ))}
           </TabList>
 
-          <TabPanels>
-            <TabPanel>
-              <List spacing={5}>
-                {list.map((item: any) => (
-                  <ListItem key={item.id}>
-                    <Topic topic={item} />
-                  </ListItem>
-                ))}
-              </List>
-            </TabPanel>
-            <TabPanel>
-              <p>two!</p>
-            </TabPanel>
-            <TabPanel>
-              <p>three!</p>
-            </TabPanel>
-          </TabPanels>
+          <List spacing={5} mt="4">
+            {list.map((item: any) => (
+              <ListItem key={item.id}>
+                <Topic topic={item} />
+              </ListItem>
+            ))}
+          </List>
         </Tabs>
       </Box>
 
@@ -92,6 +87,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const page = Number(query.page) || 1
 
   const url = `https://cnodejs.org/api/v1/topics?tab=${tabKey}&page=${page}&limit=${limit}`
+  console.log(url)
+
   const res = await fetch(url)
   const data = await res.json()
   let list = []

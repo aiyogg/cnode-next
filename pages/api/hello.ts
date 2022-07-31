@@ -7,6 +7,7 @@ export const getTopics = async (
   req: NextApiRequest,
   res: NextApiResponse,
 ) => {
-  const data = await fetch(`${baseURL}/topics`)
+  const { tab, page, limit = 20 } = req.query;
+  const data = await fetch(`${baseURL}/topics?tab=${tab}&page=${page}&limit=${limit}`)
   res.status(200).json(data)
 }
